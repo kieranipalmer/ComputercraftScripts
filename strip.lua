@@ -156,7 +156,7 @@ function branch()
         state.position.branchFacing = 1
     end
 
-    if ((checkInv() == false or checkFuel()) == false and state.mine.index == 1) then
+    if ((checkInv() or checkFuel()) == false and state.mine.index == 1) then
         state.currentState = "branchReturn"
     elseif state.branch.length >= branchSize then
         state.currentState = "branchReturn"   
@@ -228,7 +228,7 @@ function trunkReturn()
         state.currentState = "unload"
     end
     if checkFuel() == false then
-        outOfFuel()
+        state.currentState = outOfFuel
     end
 end
 
@@ -247,7 +247,7 @@ function mine()
         state.position.trunkFacing = 1
     end
 
-    if ((checkInv() == false or checkFuel()) == false and state.mine.index == 1) then
+    if ((checkInv() or checkFuel()) == false and state.mine.index == 1) then
         state.currentState = "trunkReturn"
     elseif state.position.trunk < state.trunk.length then
         forward()
@@ -270,10 +270,10 @@ function mine()
 end
 
 function decideState()
-    if checkFuel() == false or checkInv() == false then
+    if ((checkInv() or checkFuel()) == false and state.mine.index == 1) then
         state.currentState = "trunkReturn"
     elseif state.branch.length < branchSize and state.branch.length > 0 then
-        state.currentState = "returnToBranch"
+        state.currentState = "returnToBranch"  
     else
         state.currentState = "trunk"
     end
@@ -320,27 +320,21 @@ function display()
 end
 
 function outOfFuel()
-    while checkFuel() == false do
-        term.clear()
-        print("Enter fuel")
-        local inp = read()
-        refuel()
+    term.clear()
+    print("Enter fuel")
+    local inp = read()
+    refuel()
+    if checkFuel() == true then
+        state.currentState = "none"
     end
 end
 
 loadDeps()
 loadState()
 
-stateMap = {trunk = mine, trunkReturn = trunkReturn, branch = branch, branchReturn = branchReturn, returnToBranch = returnToBranch, none = decideState, unload = unload, torch = placeTorch}
+stateMap = {trunk = mine, trunkReturn = trunkReturn, branch = branch, branchReturn = branchReturn, returnToBranch = returnToBranch, none = decideState, unload = unload, torch = placeTorch, outOfFuel = outOfFuel}
 
 while state.currentState ~= "stop" do
-
-    while checkFuel() == false do
-        term.clear()
-        print("Enter fuel")
-        local inp = read()
-        refuel()
-    end
 
     display()
 

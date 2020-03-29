@@ -57,7 +57,7 @@ function right()
 end
 
 function checkFuel()
-    return turtle.getFuelLevel() > 500
+    return turtle.getFuelLevel() > state.branch.length + state.trunk.length + 10
 end
 
 function refuel()
@@ -156,7 +156,7 @@ function branch()
         state.position.branchFacing = 1
     end
 
-    if checkInv() == false and state.mine.index == 1 then
+    if ((checkInv() and checkFuel()) == false and state.mine.index == 1) then
         state.currentState = "branchReturn"
     elseif state.branch.length >= branchSize then
         state.currentState = "branchReturn"   
@@ -224,8 +224,10 @@ function trunkReturn()
     if state.position.trunk > 0 then
         forward()
         state.position.trunk = state.position.trunk - 1
-    else
+    elseif checkInv() == false then
         state.currentState = "unload"
+    else
+        state.currentState = "outOfFuel"
     end
 end
 
@@ -244,7 +246,7 @@ function mine()
         state.position.trunkFacing = 1
     end
 
-    if checkInv() == false and state.mine.index == 1 then
+    if ((checkInv() and checkFuel()) == false and state.mine.index == 1) then
         state.currentState = "trunkReturn"
     elseif state.position.trunk < state.trunk.length then
         forward()
@@ -267,10 +269,10 @@ function mine()
 end
 
 function decideState()
-    if checkFuel() == false or checkInv() == false then
+    if (checkInv() and checkFuel()) == false) then
         state.currentState = "trunkReturn"
     elseif state.branch.length < branchSize and state.branch.length > 0 then
-        state.currentState = "returnToBranch"
+        state.currentState = "returnToBranch"  
     else
         state.currentState = "trunk"
     end
@@ -316,19 +318,22 @@ function display()
     term.write("Fuel: " .. turtle.getFuelLevel())
 end
 
+function outOfFuel()
+    term.clear()
+    print("Enter fuel")
+    local inp = read()
+    refuel()
+    if checkFuel() == true then
+        state.currentState = "none"
+    end
+end
+
 loadDeps()
 loadState()
 
-stateMap = {trunk = mine, trunkReturn = trunkReturn, branch = branch, branchReturn = branchReturn, returnToBranch = returnToBranch, none = decideState, unload = unload, torch = placeTorch}
+stateMap = {trunk = mine, trunkReturn = trunkReturn, branch = branch, branchReturn = branchReturn, returnToBranch = returnToBranch, none = decideState, unload = unload, torch = placeTorch, outOfFuel = outOfFuel}
 
 while state.currentState ~= "stop" do
-
-    while checkFuel() == false do
-        term.clear()
-        print("Enter fuel")
-        local inp = read()
-        refuel()
-    end
 
     display()
 

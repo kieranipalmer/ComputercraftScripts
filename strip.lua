@@ -315,7 +315,7 @@ function display()
     term.write("State: " .. state.currentState)
 
     term.setCursorPos(x - 10, 1)
-    term.write("Fuel: " .. turtle.get.getFuelLevel())
+    term.write("Fuel: " .. turtle.getFuelLevel())
 end
 
 loadDeps()

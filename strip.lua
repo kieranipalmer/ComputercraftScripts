@@ -224,11 +224,10 @@ function trunkReturn()
     if state.position.trunk > 0 then
         forward()
         state.position.trunk = state.position.trunk - 1
-    else
+    elseif checkInv() == false then
         state.currentState = "unload"
-    end
-    if checkFuel() == false then
-        state.currentState = outOfFuel
+    else
+        state.currentState = "outOfFuel"
     end
 end
 

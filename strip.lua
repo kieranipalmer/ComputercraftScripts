@@ -270,7 +270,7 @@ function mine()
 end
 
 function decideState()
-    if ((checkInv() or checkFuel()) == false and state.mine.index == 1) then
+    if (checkInv() or checkFuel()) == false) then
         state.currentState = "trunkReturn"
     elseif state.branch.length < branchSize and state.branch.length > 0 then
         state.currentState = "returnToBranch"  

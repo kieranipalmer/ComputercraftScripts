@@ -244,10 +244,8 @@ function mine()
         state.position.trunkFacing = 1
     end
 
-    if checkInv() == false and state.mine.index == 1 then
+    if (checkInv() == false and state.mine.index == 1) or (checkFuel() == false) then
         state.currentState = "trunkReturn"
-    elseif checkFuel() == false then 
-        state.currentState = "trunkReturn"    
     elseif state.position.trunk < state.trunk.length then
         forward()
         state.position.trunk = state.position.trunk + 1

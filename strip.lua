@@ -156,7 +156,7 @@ function branch()
         state.position.branchFacing = 1
     end
 
-    if ((checkInv() or checkFuel()) == false and state.mine.index == 1) then
+    if ((checkInv() and checkFuel()) == false and state.mine.index == 1) then
         state.currentState = "branchReturn"
     elseif state.branch.length >= branchSize then
         state.currentState = "branchReturn"   
@@ -246,7 +246,7 @@ function mine()
         state.position.trunkFacing = 1
     end
 
-    if ((checkInv() or checkFuel()) == false and state.mine.index == 1) then
+    if ((checkInv() and checkFuel()) == false and state.mine.index == 1) then
         state.currentState = "trunkReturn"
     elseif state.position.trunk < state.trunk.length then
         forward()
@@ -269,7 +269,7 @@ function mine()
 end
 
 function decideState()
-    if (checkInv() or checkFuel()) == false) then
+    if (checkInv() and checkFuel()) == false) then
         state.currentState = "trunkReturn"
     elseif state.branch.length < branchSize and state.branch.length > 0 then
         state.currentState = "returnToBranch"  

@@ -57,7 +57,7 @@ function right()
 end
 
 function checkFuel()
-    return turtle.getFuelLevel() > state.branch.length + state.trunk.length
+    return turtle.getFuelLevel() > state.branch.length + state.trunk.length + 10
 end
 
 function refuel()
@@ -156,7 +156,7 @@ function branch()
         state.position.branchFacing = 1
     end
 
-    if checkInv() == false and state.mine.index == 1 then
+    if ((checkInv() == false or checkFuel()) == false and state.mine.index == 1) then
         state.currentState = "branchReturn"
     elseif state.branch.length >= branchSize then
         state.currentState = "branchReturn"   
@@ -227,6 +227,9 @@ function trunkReturn()
     else
         state.currentState = "unload"
     end
+    if checkFuel() == false then
+        outOfFuel()
+    end
 end
 
 function unload()
@@ -244,7 +247,7 @@ function mine()
         state.position.trunkFacing = 1
     end
 
-    if (checkInv() == false and state.mine.index == 1) or (checkFuel() == false) then
+    if ((checkInv() == false or checkFuel()) == false and state.mine.index == 1) then
         state.currentState = "trunkReturn"
     elseif state.position.trunk < state.trunk.length then
         forward()
@@ -314,6 +317,15 @@ function display()
 
     term.setCursorPos(x - 10, 1)
     term.write("Fuel: " .. turtle.getFuelLevel())
+end
+
+function outOfFuel()
+    while checkFuel() == false do
+        term.clear()
+        print("Enter fuel")
+        local inp = read()
+        refuel()
+    end
 end
 
 loadDeps()
